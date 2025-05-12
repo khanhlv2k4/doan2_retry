@@ -1,0 +1,12 @@
+# node_modules - thư viện cài qua npm/yarn, không cần push
+node_modules/
+
+# build/dist - file build ra, không cần push
+dist/
+build/
+.next/
+
+# file môi trường, bí mật
+.env
+.env.*
+.env.local
