@@ -12,22 +12,22 @@ export class Course {
     course_id: number;
 
     @Column({ name: 'course_name', length: 255, nullable: false })
-    courseName: string;
+    course_name: string;
 
     @Column({ name: 'course_code', length: 50, unique: true, nullable: false })
-    courseCode: string;
+    course_code: string;
 
     @Column({ name: 'instructor_id', nullable: false })
-    instructorId: number;
+    instructor_id: number;
 
     @Column({ name: 'semester_id', nullable: true })
-    semesterId: number;
+    semester_id: number;
 
     @Column({ name: 'start_date', type: 'date', nullable: false })
-    startDate: Date;
+    start_date: Date;
 
     @Column({ name: 'end_date', type: 'date', nullable: false })
-    endDate: Date;
+    end_date: Date;
 
     @Column({ type: 'text', nullable: true })
     description: string;
@@ -36,16 +36,16 @@ export class Course {
     credits: number;
 
     @Column({ name: 'academic_year', length: 20, nullable: true })
-    academicYear: string;
+    academic_year: string;
 
     @Column({ name: 'is_active', default: true })
-    isActive: boolean;
+    is_active: boolean;
 
     @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date;
+    updated_at: Date;
 
     // Relationships
     @ManyToOne(() => Instructor, instructor => instructor.courses)

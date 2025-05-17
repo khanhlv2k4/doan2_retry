@@ -1,11 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne } from 'typeorm';
-import { Student } from '../students/entities/student.entity';
-import { Instructor } from '../instructors/entities/instructor.entity';
-import { Notification } from '../notifications/entities/notification.entity';
-import { Log } from '../logs/entities/log.entity';
-import { UserSession } from '../user-sessions/entities/user-session.entity';
-import { PasswordReset } from '../password-reset/entities/password-reset.entity';
-import { QrCode } from '../qr-codes/entities/qr-code.entity';
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -25,60 +18,63 @@ export class User {
     email: string;
 
     @Column({ name: 'password_hash', nullable: false })
-    passwordHash: string;
+    password_hash: string;
 
     @Column({ type: 'enum', enum: UserRole, nullable: false })
     role: UserRole;
 
-    @Column({ name: 'user_image', length: 255, nullable: true })
-    userImage: string;
+    @Column({ name: 'user_image', type: 'varchar', length: 255, nullable: true })
+    user_image: string | null;
 
-    @Column({ length: 20, nullable: true })
-    phone: string;
+    @Column({ type: 'varchar', length: 20, nullable: true })
+    phone: string | null;
 
     @Column({ type: 'text', nullable: true })
-    address: string;
+    address: string | null;
 
     @Column({ name: 'date_of_birth', type: 'date', nullable: true })
-    dateOfBirth: Date;
+    date_of_birth: Date;
 
     @Column({ name: 'is_active', default: true })
-    isActive: boolean;
+    is_active: boolean;
 
     @Column({ name: 'last_login', type: 'timestamp', nullable: true })
-    lastLogin: Date;
+    last_login: Date;
 
     @Column({ name: 'email_verified', default: false })
-    emailVerified: boolean;
+    email_verified: boolean;
 
     @Column({ name: 'verification_token', nullable: true })
-    verificationToken: string;
+    verification_token: string;
 
     @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date;
+    updated_at: Date;
 
-    // Relationships
-    @OneToOne(() => Student, student => student.user)
-    student: Student;
+    // Giữ lại các quan hệ còn hoạt động và loại bỏ các quan hệ không tồn tại
+    @OneToOne('Student', 'user')
+    student: any;
 
-    @OneToOne(() => Instructor, instructor => instructor.user)
-    instructor: Instructor;
+    @OneToOne('Instructor', 'user')
+    instructor: any;
 
-    @OneToMany(() => Notification, notification => notification.user)
-    notifications: Notification[];
+    @OneToMany('Notification', 'user')
+    notifications: any[];
 
-    @OneToMany(() => Log, log => log.user)
-    logs: Log[];
+    // Loại bỏ các quan hệ tới bảng đã xóa
+    /*
+    @OneToMany('Log', 'user')
+    logs: any[];
 
-    @OneToMany(() => UserSession, userSession => userSession.user)
-    sessions: UserSession[];
+    @OneToMany('UserSession', 'user')
+    sessions: any[];
 
-    @OneToMany(() => PasswordReset, passwordReset => passwordReset.user)
-    passwordResets: PasswordReset[];
+    @OneToMany('PasswordReset', 'user')
+    password_resets: any[];
+    */
 
-    @OneToMany(() => QrCode, qrCode => qrCode.createdBy)
-    qrCodes: QrCode[];
+    @OneToMany('QrCode', 'created_by_user')
+    qr_codes: any[];
 }

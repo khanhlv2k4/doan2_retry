@@ -28,18 +28,14 @@ export class CoursesService {
         }
 
         return course;
-    }
-
-    async findByInstructor(instructorId: number): Promise<Course[]> {
+    } async findByInstructor(instructor_id: number): Promise<Course[]> {
         return this.coursesRepository.find({
-            where: { instructorId },
+            where: { instructor_id: instructor_id },
             relations: ['semester', 'schedules'],
         });
-    }
-
-    async findBySemester(semesterId: number): Promise<Course[]> {
+    } async findBySemester(semester_id: number): Promise<Course[]> {
         return this.coursesRepository.find({
-            where: { semesterId },
+            where: { semester_id: semester_id },
             relations: ['instructor', 'instructor.user', 'schedules'],
         });
     }
@@ -47,26 +43,23 @@ export class CoursesService {
     async create(createCourseDto: CreateCourseDto): Promise<Course> {
         // Check if course code already exists
         const existingCourse = await this.coursesRepository.findOne({
-            where: { courseCode: createCourseDto.courseCode }
+            where: { course_code: createCourseDto.course_code }
         });
 
         if (existingCourse) {
-            throw new BadRequestException(`Course with code ${createCourseDto.courseCode} already exists`);
-        }
-
-        // Create new course
-        const course = this.coursesRepository.create({
-            courseName: createCourseDto.courseName,
-            courseCode: createCourseDto.courseCode,
-            instructorId: createCourseDto.instructorId,
-            semesterId: createCourseDto.semesterId,
-            startDate: new Date(createCourseDto.startDate),
-            endDate: new Date(createCourseDto.endDate),
-            description: createCourseDto.description,
-            credits: createCourseDto.credits,
-            academicYear: createCourseDto.academicYear,
-            isActive: createCourseDto.isActive ?? true,
-        });
+            throw new BadRequestException(`Course with code ${createCourseDto.course_code} already exists`);
+        }        // Create new course
+        const course = new Course();
+        course.course_name = createCourseDto.course_name;
+        course.course_code = createCourseDto.course_code;
+        course.instructor_id = createCourseDto.instructor_id;
+        course.semester_id = createCourseDto.semester_id || 0;
+        course.start_date = createCourseDto.start_date ? new Date(createCourseDto.start_date) : new Date();
+        course.end_date = createCourseDto.end_date ? new Date(createCourseDto.end_date) : new Date();
+        course.description = createCourseDto.description || '';
+        course.credits = createCourseDto.credits || 0;
+        course.academic_year = createCourseDto.academic_year || '';
+        course.is_active = createCourseDto.is_active ?? true;
 
         return this.coursesRepository.save(course);
     }
@@ -75,27 +68,27 @@ export class CoursesService {
         const course = await this.findOne(id);
 
         // Check if course code is being changed and if it already exists
-        if (updateCourseDto.courseCode && updateCourseDto.courseCode !== course.courseCode) {
+        if (updateCourseDto.course_code && updateCourseDto.course_code !== course.course_code) {
             const existingCourse = await this.coursesRepository.findOne({
-                where: { courseCode: updateCourseDto.courseCode }
+                where: { course_code: updateCourseDto.course_code }
             });
 
             if (existingCourse) {
-                throw new BadRequestException(`Course with code ${updateCourseDto.courseCode} already exists`);
+                throw new BadRequestException(`Course with code ${updateCourseDto.course_code} already exists`);
             }
         }
 
         // Update course properties
-        if (updateCourseDto.courseName) course.courseName = updateCourseDto.courseName;
-        if (updateCourseDto.courseCode) course.courseCode = updateCourseDto.courseCode;
-        if (updateCourseDto.instructorId) course.instructorId = updateCourseDto.instructorId;
-        if (updateCourseDto.semesterId) course.semesterId = updateCourseDto.semesterId;
-        if (updateCourseDto.startDate) course.startDate = new Date(updateCourseDto.startDate);
-        if (updateCourseDto.endDate) course.endDate = new Date(updateCourseDto.endDate);
+        if (updateCourseDto.course_name) course.course_name = updateCourseDto.course_name;
+        if (updateCourseDto.course_code) course.course_code = updateCourseDto.course_code;
+        if (updateCourseDto.instructor_id) course.instructor_id = updateCourseDto.instructor_id;
+        if (updateCourseDto.semester_id) course.semester_id = updateCourseDto.semester_id;
+        if (updateCourseDto.start_date) course.start_date = new Date(updateCourseDto.start_date);
+        if (updateCourseDto.end_date) course.end_date = new Date(updateCourseDto.end_date);
         if (updateCourseDto.description) course.description = updateCourseDto.description;
         if (updateCourseDto.credits) course.credits = updateCourseDto.credits;
-        if (updateCourseDto.academicYear) course.academicYear = updateCourseDto.academicYear;
-        if (updateCourseDto.isActive !== undefined) course.isActive = updateCourseDto.isActive;
+        if (updateCourseDto.academic_year) course.academic_year = updateCourseDto.academic_year;
+        if (updateCourseDto.is_active !== undefined) course.is_active = updateCourseDto.is_active;
 
         return this.coursesRepository.save(course);
     }
@@ -120,7 +113,7 @@ export class CoursesService {
 
     async getActiveCourses(): Promise<Course[]> {
         return this.coursesRepository.find({
-            where: { isActive: true },
+            where: { is_active: true },
             relations: ['instructor', 'instructor.user', 'semester'],
         });
     }
@@ -130,11 +123,11 @@ export class CoursesService {
 
         return this.coursesRepository.find({
             where: {
-                startDate: MoreThan(now),
-                isActive: true
+                start_date: MoreThan(now),
+                is_active: true
             },
             relations: ['instructor', 'instructor.user', 'semester'],
-            order: { startDate: 'ASC' },
+            order: { start_date: 'ASC' },
         });
     }
 
@@ -143,9 +136,9 @@ export class CoursesService {
 
         return this.coursesRepository.find({
             where: {
-                startDate: LessThanOrEqual(now),
-                endDate: MoreThanOrEqual(now),
-                isActive: true
+                start_date: LessThanOrEqual(now),
+                end_date: MoreThanOrEqual(now),
+                is_active: true
             },
             relations: ['instructor', 'instructor.user', 'semester'],
         });

@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    CreateDateColumn,
+    UpdateDateColumn,
+    ManyToOne,
+    JoinColumn,
+    Unique,
+} from 'typeorm';
 import { Student } from '../../students/entities/student.entity';
 import { Course } from '../../courses/entities/course.entity';
 import { Schedule } from '../../schedule/entities/schedule.entity';
@@ -32,7 +41,7 @@ export class Attendance {
     @Column({
         type: 'enum',
         enum: AttendanceStatus,
-        default: AttendanceStatus.PRESENT
+        default: AttendanceStatus.PRESENT,
     })
     status: AttendanceStatus;
 

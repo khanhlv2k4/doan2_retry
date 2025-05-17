@@ -9,29 +9,29 @@ export class Schedule {
     @PrimaryGeneratedColumn()
     schedule_id: number;
 
-    @Column({ name: 'course_id', nullable: false })
-    courseId: number;
+    @Column({ nullable: false })
+    course_id: number;
 
-    @Column({ name: 'room_id', nullable: true })
-    roomId: number;
+    @Column({ nullable: true })
+    room_id: number;
 
-    @Column({ name: 'day_of_week', length: 10, nullable: false })
-    dayOfWeek: string;
+    @Column({ length: 10, nullable: false })
+    day_of_week: string;
 
-    @Column({ name: 'start_time', type: 'time', nullable: false })
-    startTime: Date;
+    @Column({ type: 'time', nullable: false })
+    start_time: Date;
 
-    @Column({ name: 'end_time', type: 'time', nullable: false })
-    endTime: Date;
+    @Column({ type: 'time', nullable: false })
+    end_time: Date;
 
-    @Column({ name: 'repeat_pattern', length: 50, default: 'weekly' })
-    repeatPattern: string;
+    @Column({ length: 50, default: 'weekly' })
+    repeat_pattern: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+    @CreateDateColumn()
+    created_at: Date;
 
-    @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date;
+    @UpdateDateColumn()
+    updated_at: Date;
 
     // Relationships
     @ManyToOne(() => Course, course => course.schedules)
@@ -43,7 +43,7 @@ export class Schedule {
     room: Room;
 
     @OneToMany(() => QrCode, qrCode => qrCode.schedule)
-    qrCodes: QrCode[];
+    qr_codes: QrCode[];
 
     @OneToMany(() => Attendance, attendance => attendance.schedule)
     attendances: Attendance[];

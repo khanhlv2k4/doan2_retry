@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification, NotificationStatus, NotificationType } from './entities/notification.entity';
 import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification.dto';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/services/users.service';
 
 @Injectable()
 export class NotificationsService {
@@ -16,30 +16,30 @@ export class NotificationsService {
     async findAll(): Promise<Notification[]> {
         return this.notificationsRepository.find({
             relations: ['user'],
-            order: { createdAt: 'DESC' },
+            order: { created_at: 'DESC' },
         });
     }
 
-    async findByUser(userId: number): Promise<Notification[]> {
+    async findByUser(user_id: number): Promise<Notification[]> {
         // Verify user exists
-        await this.usersService.findOne(userId);
+        await this.usersService.findOne(user_id);
 
         return this.notificationsRepository.find({
-            where: { userId },
-            order: { createdAt: 'DESC' },
+            where: { user_id },
+            order: { created_at: 'DESC' },
         });
     }
 
-    async findUnreadByUser(userId: number): Promise<Notification[]> {
+    async findUnreadByUser(user_id: number): Promise<Notification[]> {
         // Verify user exists
-        await this.usersService.findOne(userId);
+        await this.usersService.findOne(user_id);
 
         return this.notificationsRepository.find({
             where: {
-                userId,
-                isRead: false
+                user_id,
+                is_read: false
             },
-            order: { createdAt: 'DESC' },
+            order: { created_at: 'DESC' },
         });
     }
 
@@ -57,59 +57,59 @@ export class NotificationsService {
     }
 
     async create(createNotificationDto: CreateNotificationDto): Promise<Notification> {
-        // If userId is provided, verify user exists
-        if (createNotificationDto.userId) {
-            await this.usersService.findOne(createNotificationDto.userId);
+        // If user_id is provided, verify user exists
+        if (createNotificationDto.user_id) {
+            await this.usersService.findOne(createNotificationDto.user_id);
         }
 
         const notification = this.notificationsRepository.create({
-            userId: createNotificationDto.userId,
+            user_id: createNotificationDto.user_id,
             title: createNotificationDto.title,
             message: createNotificationDto.message,
             type: createNotificationDto.type,
             status: NotificationStatus.UNREAD,
-            relatedId: createNotificationDto.relatedId,
-            relatedType: createNotificationDto.relatedType,
-            isRead: false,
+            related_id: createNotificationDto.resource_id,
+            related_type: createNotificationDto.resource_type,
+            is_read: false,
         });
 
         return this.notificationsRepository.save(notification);
     }
 
-    async createSystemNotification(title: string, message: string, relatedId?: number, relatedType?: string): Promise<Notification> {
+    async createSystemNotification(title: string, message: string, related_id?: number, related_type?: string): Promise<Notification> {
         const notification = this.notificationsRepository.create({
             title,
             message,
             type: NotificationType.SYSTEM,
             status: NotificationStatus.UNREAD,
-            relatedId,
-            relatedType,
-            isRead: false,
+            related_id,
+            related_type,
+            is_read: false,
         });
 
         return this.notificationsRepository.save(notification);
     }
 
     async createUserNotification(
-        userId: number,
+        user_id: number,
         title: string,
         message: string,
         type: NotificationType = NotificationType.USER,
-        relatedId?: number,
-        relatedType?: string
+        related_id?: number,
+        related_type?: string
     ): Promise<Notification> {
         // Verify user exists
-        await this.usersService.findOne(userId);
+        await this.usersService.findOne(user_id);
 
         const notification = this.notificationsRepository.create({
-            userId,
+            user_id,
             title,
             message,
             type,
             status: NotificationStatus.UNREAD,
-            relatedId,
-            relatedType,
-            isRead: false,
+            related_id,
+            related_type,
+            is_read: false,
         });
 
         return this.notificationsRepository.save(notification);
@@ -119,17 +119,14 @@ export class NotificationsService {
         const notification = await this.findOne(id);
 
         // Update notification properties
-        if (updateNotificationDto.status !== undefined) {
+        if (updateNotificationDto.status) {
             notification.status = updateNotificationDto.status;
         }
 
-        if (updateNotificationDto.isRead !== undefined) {
-            notification.isRead = updateNotificationDto.isRead;
-
-            // If marking as read, set the readAt timestamp
-            if (updateNotificationDto.isRead) {
-                notification.readAt = new Date();
-            }
+        // If status is updated to READ, update isRead and readAt
+        if (updateNotificationDto.status === NotificationStatus.READ) {
+            notification.is_read = true;
+            notification.read_at = new Date();
         }
 
         return this.notificationsRepository.save(notification);
@@ -137,41 +134,36 @@ export class NotificationsService {
 
     async markAsRead(id: number): Promise<Notification> {
         const notification = await this.findOne(id);
-
-        notification.isRead = true;
         notification.status = NotificationStatus.READ;
-        notification.readAt = new Date();
-
+        notification.is_read = true;
+        notification.read_at = new Date();
         return this.notificationsRepository.save(notification);
     }
 
-    async markAllAsRead(userId: number): Promise<void> {
-        // Verify user exists
-        await this.usersService.findOne(userId);
-
+    async markAllAsRead(user_id: number): Promise<void> {
         await this.notificationsRepository.update(
-            { userId, isRead: false },
-            {
-                isRead: true,
-                status: NotificationStatus.READ,
-                readAt: new Date()
-            }
+            { user_id, is_read: false },
+            { is_read: true, status: NotificationStatus.READ, read_at: new Date() }
         );
     }
 
     async remove(id: number): Promise<void> {
         const notification = await this.findOne(id);
         await this.notificationsRepository.remove(notification);
+    } async getUnreadCount(user_id: number): Promise<number> {
+        return this.notificationsRepository.count({
+            where: {
+                user_id,
+                is_read: false
+            }
+        });
     }
 
-    async clearAllForUser(userId: number): Promise<void> {
-        // Verify user exists
-        await this.usersService.findOne(userId);
-
-        const notifications = await this.notificationsRepository.find({
-            where: { userId },
-        });
-
-        await this.notificationsRepository.remove(notifications);
+    async clearAllForUser(user_id: number): Promise<void> {
+        // Mark all notifications as read
+        await this.notificationsRepository.update(
+            { user_id, is_read: false },
+            { is_read: true, read_at: new Date() }
+        );
     }
 }

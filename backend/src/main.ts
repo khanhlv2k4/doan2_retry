@@ -15,11 +15,13 @@ async function bootstrap() {
     transform: true,
   }));
 
-  // Setup Swagger
+  // Setup Swagger with updated configuration
   setupSwagger(app);
 
-  await app.listen(process.env.PORT ?? 3200);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  const port = process.env.PORT ?? 3200;
+  await app.listen(port);
+  console.log(`Application is running on: http://localhost:${port}`);
+  console.log(`Swagger documentation is available at: http://localhost:${port}/api/docs`);
 }
 
 void bootstrap();

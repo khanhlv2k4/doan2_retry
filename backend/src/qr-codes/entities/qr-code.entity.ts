@@ -7,56 +7,48 @@ import { Attendance } from '../../attendance/entities/attendance.entity';
 @Entity('qr_codes')
 export class QrCode {
     @PrimaryGeneratedColumn()
-    qr_id: number;
-
-    @Column({ name: 'course_id', nullable: false })
-    courseId: number;
+    qr_id: number; @Column({ name: 'course_id', nullable: false })
+    course_id: number;
 
     @Column({ name: 'schedule_id', nullable: true })
-    scheduleId: number;
+    schedule_id: number;
 
     @Column({ name: 'qr_code', type: 'text', unique: true, nullable: false })
-    qrCode: string;
+    qr_code: string;
 
     @Column({ name: 'qr_image_url', type: 'text', nullable: true })
-    qrImageUrl: string;
+    qr_image_url: string;
 
     @CreateDateColumn({ name: 'generated_at' })
-    generatedAt: Date;
+    generated_at: Date;
 
     @Column({ name: 'expires_at', type: 'timestamp', nullable: false })
-    expiresAt: Date;
+    expires_at: Date;
 
     @Column({ type: 'interval', default: '10 minutes' })
     duration: string;
 
     @Column({ name: 'session_date', type: 'date', nullable: false })
-    sessionDate: Date;
-
-    @Column({ name: 'is_active', default: true })
-    isActive: boolean;
+    session_date: Date; @Column({ name: 'is_active', default: true })
+    is_active: boolean;
 
     @Column({ name: 'created_by', nullable: true })
-    createdById: number;
+    created_by: number;
 
     @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date;
+    updated_at: Date;
 
     // Relationships
     @ManyToOne(() => Course, course => course.qrCodes)
     @JoinColumn({ name: 'course_id' })
-    course: Course;
-
-    @ManyToOne(() => Schedule, schedule => schedule.qrCodes)
+    course: Course; @ManyToOne(() => Schedule, schedule => schedule.qr_codes)
     @JoinColumn({ name: 'schedule_id' })
-    schedule: Schedule;
-
-    @ManyToOne(() => User, user => user.qrCodes)
+    schedule: Schedule; @ManyToOne(() => User, user => user.qr_codes)
     @JoinColumn({ name: 'created_by' })
-    createdBy: User;
+    created_by_user: User;
 
     @OneToMany(() => Attendance, attendance => attendance.qrCode)
     attendances: Attendance[];

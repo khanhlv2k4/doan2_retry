@@ -19,7 +19,7 @@ export class Notification {
     notification_id: number;
 
     @Column({ name: 'user_id', nullable: true })
-    userId: number;
+    user_id: number;
 
     @Column({ length: 255, nullable: false })
     title: string;
@@ -44,22 +44,20 @@ export class Notification {
     status: NotificationStatus;
 
     @Column({ name: 'related_id', nullable: true })
-    relatedId: number;
+    related_id: number;
 
     @Column({ name: 'related_type', length: 50, nullable: true })
-    relatedType: string;
-
-    @Column({ name: 'is_read', default: false })
-    isRead: boolean;
+    related_type: string; @Column({ name: 'is_read', default: false })
+    is_read: boolean;
 
     @Column({ name: 'read_at', type: 'timestamp', nullable: true })
-    readAt: Date;
+    read_at: Date;
 
     @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+    created_at: Date;
 
     @UpdateDateColumn({ name: 'updated_at' })
-    updatedAt: Date;
+    updated_at: Date;
 
     // Relationships
     @ManyToOne(() => User, user => user.notifications)

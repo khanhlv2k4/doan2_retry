@@ -63,19 +63,33 @@ export class StudentResponseDto {
     @ApiPropertyOptional({ example: 2022, description: 'Year of admission' })
     year_of_admission?: number;
 
-    @ApiProperty({ example: '2025-01-01T00:00:00.000Z', description: 'Record creation timestamp' })
+    @ApiProperty({ example: '2023-01-01T00:00:00.000Z', description: 'Creation timestamp' })
     created_at: Date;
 
-    @ApiProperty({ example: '2025-01-01T00:00:00.000Z', description: 'Record update timestamp' })
+    @ApiProperty({ example: '2023-01-01T00:00:00.000Z', description: 'Last update timestamp' })
     updated_at: Date;
 
-    // Include user information
-    @ApiProperty({ example: 'user@example.com', description: 'User email address' })
-    email: string;
+    @ApiPropertyOptional({
+        example: { user_id: 1, name: 'John Doe', email: 'john@example.com' },
+        description: 'User information'
+    })
+    user?: {
+        user_id: number;
+        name: string;
+        email: string;
+        phone?: string;
+        role?: string;
+    };
 
-    @ApiProperty({ example: 'John Doe', description: 'User full name' })
-    name: string;
-
-    @ApiPropertyOptional({ example: '/uploads/avatars/user.jpg', description: 'User profile image path' })
-    user_image?: string;
+    @ApiPropertyOptional({
+        example: [
+            { course_id: 1, course_name: 'Introduction to Programming' }
+        ],
+        description: 'Enrolled courses'
+    })
+    courses?: {
+        course_id: number;
+        course_name: string;
+        course_code?: string;
+    }[];
 }

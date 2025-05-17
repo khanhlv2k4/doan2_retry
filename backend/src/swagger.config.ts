@@ -3,19 +3,16 @@ import { INestApplication } from '@nestjs/common';
 
 export function setupSwagger(app: INestApplication) {
     const config = new DocumentBuilder()
-        .setTitle('QR Attendance System API')
-        .setDescription('API Documentation for the QR Code Attendance Tracking System')
+        .setTitle('Attendance QR API')
+        .setDescription('API documentation for Attendance QR System')
         .setVersion('1.0')
         .addTag('auth', 'Authentication endpoints')
         .addTag('users', 'User management endpoints')
         .addTag('students', 'Student management endpoints')
         .addTag('instructors', 'Instructor management endpoints')
         .addTag('courses', 'Course management endpoints')
-        .addTag('attendance', 'Attendance tracking endpoints')
-        .addTag('qr-codes', 'QR code generation and validation endpoints')
-        .addTag('notifications', 'Notification system endpoints')
-        .addTag('reports', 'Reporting and analytics endpoints')
-        .addTag('admin', 'Admin dashboard endpoints')
+        .addTag('attendance', 'Attendance management endpoints')
+        .addTag('qr-codes', 'QR code generation and management')
         .addBearerAuth(
             {
                 type: 'http',
@@ -30,5 +27,15 @@ export function setupSwagger(app: INestApplication) {
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api/docs', app, document);
+
+    // Setup Swagger UI at /api/docs endpoint instead of just /api
+    SwaggerModule.setup('api/docs', app, document, {
+        swaggerOptions: {
+            persistAuthorization: true,
+        },
+        customSiteTitle: 'Attendance QR API Docs',
+    });
+
+    // Log Swagger URL to console for easy access during development
+    console.log(`Swagger UI available at: ${process.env.BASE_URL || 'http://localhost:' + (process.env.PORT || '3200')}/api/docs`);
 }

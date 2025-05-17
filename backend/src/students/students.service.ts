@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Student } from './entities/student.entity';
 import { User, UserRole } from '../users/entities/user.entity';
 import { CreateStudentDto, UpdateStudentDto } from './dto/student.dto';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../users/services/users.service';
 
 @Injectable()
 export class StudentsService {
@@ -35,34 +35,27 @@ export class StudentsService {
         return student;
     }
 
-    async findByUserId(userId: number): Promise<Student> {
+    async findByUserId(user_id: number): Promise<Student> {
         const student = await this.studentsRepository.findOne({
-            where: { userId },
+            where: { user_id },
             relations: ['user', 'studentCourses'],
         });
 
         if (!student) {
-            throw new NotFoundException(`Student with User ID ${userId} not found`);
+            throw new NotFoundException(`Student with User ID ${user_id} not found`);
         }
 
         return student;
     }
 
     async create(createStudentDto: CreateStudentDto): Promise<Student> {
-        // Create the base user first
-        const newUser = await this.usersService.create({
-            ...createStudentDto.user,
-            role: UserRole.STUDENT,
-        });
-
-        // Create the student profile
+        // Create student record
         const student = this.studentsRepository.create({
-            userId: newUser.user_id,
-            studentCode: createStudentDto.studentCode,
-            program: createStudentDto.program,
-            enrollmentYear: createStudentDto.enrollmentYear,
-            graduationYear: createStudentDto.graduationYear,
-            user: newUser,
+            user_id: createStudentDto.user_id,
+            student_code: createStudentDto.student_code,
+            class_id: createStudentDto.class_id,
+            department: createStudentDto.department,
+            year_of_admission: createStudentDto.year_of_admission,
         });
 
         return this.studentsRepository.save(student);
@@ -72,15 +65,14 @@ export class StudentsService {
         const student = await this.findOne(id);
 
         // Update student-specific information
-        if (updateStudentDto.studentCode) student.studentCode = updateStudentDto.studentCode;
-        if (updateStudentDto.program) student.program = updateStudentDto.program;
-        if (updateStudentDto.enrollmentYear) student.enrollmentYear = updateStudentDto.enrollmentYear;
-        if (updateStudentDto.graduationYear) student.graduationYear = updateStudentDto.graduationYear;
+        if (updateStudentDto.class_id !== undefined)
+            student.class_id = updateStudentDto.class_id;
 
-        // Update base user information if provided
-        if (updateStudentDto.user) {
-            await this.usersService.update(student.userId, updateStudentDto.user);
-        }
+        if (updateStudentDto.department)
+            student.department = updateStudentDto.department;
+
+        if (updateStudentDto.year_of_admission !== undefined)
+            student.year_of_admission = updateStudentDto.year_of_admission;
 
         return this.studentsRepository.save(student);
     }
@@ -92,6 +84,6 @@ export class StudentsService {
         await this.studentsRepository.remove(student);
 
         // Then remove the associated user
-        await this.usersService.remove(student.userId);
+        await this.usersService.remove(student.user_id);
     }
 }

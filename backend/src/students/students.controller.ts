@@ -11,6 +11,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/entities/user.entity';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('students')
 @Controller('students')
@@ -19,6 +20,7 @@ import { UserRole } from '../users/entities/user.entity';
 export class StudentsController {
     constructor(private readonly studentsService: StudentsService) { }
 
+    @Public()
     @ApiOperation({ summary: 'Get all students' })
     @ApiResponse({
         status: 200,
@@ -32,6 +34,7 @@ export class StudentsController {
         return students.map(student => this.mapToResponseDto(student));
     }
 
+    @Public()
     @ApiOperation({ summary: 'Get a specific student by ID' })
     @ApiResponse({
         status: 200,
@@ -87,28 +90,36 @@ export class StudentsController {
     }
 
     private mapToResponseDto(student: any): StudentResponseDto {
-        return {
+        const response: StudentResponseDto = {
             student_id: student.student_id,
-            userId: student.userId,
-            studentCode: student.studentCode,
-            program: student.program,
-            enrollmentYear: student.enrollmentYear,
-            graduationYear: student.graduationYear,
-            user: student.user ? {
+            user_id: student.user_id,
+            student_code: student.student_code,
+            class_id: student.class_id,
+            department: student.department,
+            year_of_admission: student.year_of_admission,
+            created_at: student.created_at,
+            updated_at: student.updated_at
+        };
+
+        // Add optional properties
+        if (student.user) {
+            response.user = {
                 user_id: student.user.user_id,
                 name: student.user.name,
                 email: student.user.email,
                 phone: student.user.phone,
-                address: student.user.address,
-                dateOfBirth: student.user.dateOfBirth,
-                userImage: student.user.userImage,
-                isActive: student.user.isActive,
-            } : undefined,
-            courses: student.studentCourses?.map(sc => ({
+                role: student.user.role
+            };
+        }
+
+        if (student.studentCourses) {
+            response.courses = student.studentCourses.map((sc: any) => ({
                 course_id: sc.course.course_id,
-                courseCode: sc.course.courseCode,
-                courseName: sc.course.courseName,
-            })),
-        };
+                course_code: sc.course.course_code,
+                course_name: sc.course.course_name,
+            }));
+        }
+
+        return response;
     }
 }

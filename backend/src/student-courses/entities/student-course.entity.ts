@@ -1,13 +1,16 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Student } from '../../students/entities/student.entity';
 import { Course } from '../../courses/entities/course.entity';
 
 @Entity('student_courses')
 export class StudentCourse {
-    @PrimaryColumn()
+    @PrimaryGeneratedColumn()
+    enrollment_id: number;
+
+    @Column()
     student_id: number;
 
-    @PrimaryColumn()
+    @Column()
     course_id: number;
 
     @CreateDateColumn()
@@ -17,7 +20,13 @@ export class StudentCourse {
     status: string;
 
     @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-    final_grade: number;
+    grade: number;
+
+    @CreateDateColumn()
+    created_at: Date;
+
+    @UpdateDateColumn()
+    updated_at: Date;
 
     @ManyToOne(() => Student, student => student.studentCourses)
     @JoinColumn({ name: 'student_id' })

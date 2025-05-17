@@ -39,6 +39,11 @@ export class CreateNotificationDto {
     @IsNumber()
     resource_id?: number;
 
+    @ApiPropertyOptional({ example: 'course', description: 'Related resource type' })
+    @IsOptional()
+    @IsString()
+    resource_type?: string;
+
     @ApiPropertyOptional({ example: { key: 'value' }, description: 'Additional metadata' })
     @IsOptional()
     metadata?: Record<string, any>;
@@ -52,6 +57,13 @@ export class UpdateNotificationDto {
     })
     @IsEnum(NotificationStatus)
     status: NotificationStatus;
+
+    @ApiPropertyOptional({
+        example: true,
+        description: 'Whether the notification has been read'
+    })
+    @IsOptional()
+    is_read?: boolean;
 }
 
 export class NotificationResponseDto {

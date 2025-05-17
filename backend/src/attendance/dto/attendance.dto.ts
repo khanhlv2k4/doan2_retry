@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsEnum, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+    IsDate,
+    IsEnum,
+    IsNumber,
+    IsObject,
+    IsOptional,
+    IsString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum AttendanceStatus {
@@ -31,14 +38,15 @@ export class CreateAttendanceDto {
     @ApiProperty({
         enum: AttendanceStatus,
         example: AttendanceStatus.PRESENT,
-        description: 'Attendance status'
+        description: 'Attendance status',
     })
     @IsEnum(AttendanceStatus)
     status: AttendanceStatus;
 
     @ApiPropertyOptional({
         example: { browser: 'Chrome', os: 'Windows', device: 'Desktop' },
-        description: 'Device information'
+        description: 'Device information',
+        additionalProperties: true,
     })
     @IsOptional()
     @IsObject()
@@ -46,7 +54,8 @@ export class CreateAttendanceDto {
 
     @ApiPropertyOptional({
         example: { latitude: 10.123, longitude: 106.456 },
-        description: 'Location information'
+        description: 'Location information',
+        additionalProperties: true,
     })
     @IsOptional()
     @IsObject()
@@ -62,7 +71,7 @@ export class UpdateAttendanceDto {
     @ApiPropertyOptional({
         enum: AttendanceStatus,
         example: AttendanceStatus.EXCUSED,
-        description: 'Attendance status'
+        description: 'Attendance status',
     })
     @IsOptional()
     @IsEnum(AttendanceStatus)
@@ -75,7 +84,7 @@ export class UpdateAttendanceDto {
 }
 
 export class RecordAttendanceDto {
-    @ApiProperty({ example: 'abc123xyz789', description: 'QR code scanned' })
+    @ApiProperty({ example: 'abc123xyz789', description: 'QR code string' })
     @IsString()
     qr_code: string;
 
@@ -85,7 +94,8 @@ export class RecordAttendanceDto {
 
     @ApiPropertyOptional({
         example: { browser: 'Chrome', os: 'Windows', device: 'Desktop' },
-        description: 'Device information'
+        description: 'Device information',
+        additionalProperties: true,
     })
     @IsOptional()
     @IsObject()
@@ -93,7 +103,8 @@ export class RecordAttendanceDto {
 
     @ApiPropertyOptional({
         example: { latitude: 10.123, longitude: 106.456 },
-        description: 'Location information'
+        description: 'Location information',
+        additionalProperties: true,
     })
     @IsOptional()
     @IsObject()
@@ -119,19 +130,21 @@ export class AttendanceResponseDto {
     @ApiProperty({
         enum: AttendanceStatus,
         example: AttendanceStatus.PRESENT,
-        description: 'Attendance status'
+        description: 'Attendance status',
     })
     status: AttendanceStatus;
 
     @ApiPropertyOptional({
         example: { browser: 'Chrome', os: 'Windows', device: 'Desktop' },
-        description: 'Device information'
+        description: 'Device information',
+        additionalProperties: true,
     })
     device_info?: Record<string, any>;
 
     @ApiPropertyOptional({
         example: { latitude: 10.123, longitude: 106.456 },
-        description: 'Location information'
+        description: 'Location information',
+        additionalProperties: true,
     })
     location?: Record<string, any>;
 
@@ -143,27 +156,23 @@ export class AttendanceResponseDto {
 
     @ApiPropertyOptional({
         description: 'Student information',
-        schema: {
-            type: 'object',
-            example: {
-                name: 'John Doe',
-                student_code: 'SV12345'
-            },
-            additionalProperties: true
-        }
+        type: 'object',
+        example: {
+            name: 'John Doe',
+            student_code: 'SV12345',
+        },
+        additionalProperties: true,
     })
     student?: any;
 
     @ApiPropertyOptional({
         description: 'Course information',
-        schema: {
-            type: 'object',
-            example: {
-                course_name: 'Introduction to Programming',
-                course_code: 'CS101'
-            },
-            additionalProperties: true
-        }
+        type: 'object',
+        example: {
+            course_name: 'Introduction to Programming',
+            course_code: 'CS101',
+        },
+        additionalProperties: true,
     })
     course?: any;
 }

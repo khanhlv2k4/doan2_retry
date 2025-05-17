@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Schedule } from '../../schedule/entities/schedule.entity';
 
 @Entity('rooms')
 export class Room {
@@ -19,4 +20,8 @@ export class Room {
 
     @UpdateDateColumn()
     updated_at: Date;
+
+    // Relationships
+    @OneToMany(() => Schedule, schedule => schedule.room)
+    schedules: Schedule[];
 }

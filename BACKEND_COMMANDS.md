@@ -56,7 +56,7 @@ java -jar target/app-name.jar
 ```
 
 ## Database Setup
-Based on the SQL schema in README.md, you'll need PostgreSQL installed:
+Dựa trên schema SQL trong database_setup.sql, bạn cần cài đặt PostgreSQL:
 
 ```bash
 # Connect to PostgreSQL
@@ -68,10 +68,15 @@ CREATE DATABASE doan2_end;
 # Connect to the database
 \c doan2_end
 
-# Run the SQL schema from README.md
-# You can copy the SQL commands from README.md into a file and run:
-psql -U postgres -d doan2_end -f schema.sql
+# Run the SQL schema
+psql -U postgres -d doan2_end -f database_setup.sql
 ```
+
+## Cấu trúc bảng đã được cập nhật
+Chú ý: Các bảng sau đã bị loại bỏ khỏi schema:
+- logs
+- user_sessions
+- admin_dashboard
 
 ## Docker (if containerized)
 ```bash

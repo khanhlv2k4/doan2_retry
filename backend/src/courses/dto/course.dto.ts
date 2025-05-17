@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsBoolean, IsDate } from 'class-validator';
 
 export class CreateCourseDto {
-    @ApiProperty({ example: 'Introduction to Programming', description: 'Course name' })
+  @ApiProperty({ example: 'Introduction to Programming', description: 'Course name' })
     @IsString()
     course_name: string;
 
@@ -28,6 +28,24 @@ export class CreateCourseDto {
     @IsOptional()
     @IsNumber()
     semester_id?: number;
+
+    @ApiPropertyOptional({ example: '2023-09-01', description: 'Course start date' })
+    @IsOptional()
+    start_date?: Date;
+
+    @ApiPropertyOptional({ example: '2023-12-31', description: 'Course end date' })
+    @IsOptional()
+    end_date?: Date;
+
+    @ApiPropertyOptional({ example: '2023-2024', description: 'Academic year' })
+    @IsOptional()
+    @IsString()
+    academic_year?: string;
+
+    @ApiPropertyOptional({ example: true, description: 'Whether the course is active' })
+    @IsOptional()
+    @IsBoolean()
+    is_active?: boolean;
 }
 
 export class UpdateCourseDto {
@@ -35,6 +53,11 @@ export class UpdateCourseDto {
     @IsOptional()
     @IsString()
     course_name?: string;
+
+    @ApiPropertyOptional({ example: 'CS101', description: 'Course code' })
+    @IsOptional()
+    @IsString()
+    course_code?: string;
 
     @ApiPropertyOptional({ example: 'Basic programming concepts', description: 'Course description' })
     @IsOptional()
@@ -55,6 +78,24 @@ export class UpdateCourseDto {
     @IsOptional()
     @IsNumber()
     semester_id?: number;
+
+    @ApiPropertyOptional({ example: '2023-09-01', description: 'Course start date' })
+    @IsOptional()
+    start_date?: Date;
+
+    @ApiPropertyOptional({ example: '2023-12-31', description: 'Course end date' })
+    @IsOptional()
+    end_date?: Date;
+
+    @ApiPropertyOptional({ example: '2023-2024', description: 'Academic year' })
+    @IsOptional()
+    @IsString()
+    academic_year?: string;
+
+    @ApiPropertyOptional({ example: true, description: 'Whether the course is active' })
+    @IsOptional()
+    @IsBoolean()
+    is_active?: boolean;
 }
 
 export class CourseResponseDto {
@@ -79,6 +120,18 @@ export class CourseResponseDto {
     @ApiPropertyOptional({ example: 1, description: 'Semester ID' })
     semester_id?: number;
 
+    @ApiPropertyOptional({ example: '2023-09-01', description: 'Start date' })
+    start_date?: Date;
+
+    @ApiPropertyOptional({ example: '2023-12-31', description: 'End date' })
+    end_date?: Date;
+
+    @ApiPropertyOptional({ example: '2023-2024', description: 'Academic year' })
+    academic_year?: string;
+
+    @ApiPropertyOptional({ example: true, description: 'Whether the course is active' })
+    is_active?: boolean;
+
     @ApiProperty({ example: '2025-01-01T00:00:00.000Z', description: 'Record creation timestamp' })
     created_at: Date;
 
@@ -93,7 +146,8 @@ export class CourseResponseDto {
             email: 'instructor@example.com',
             department: 'Computer Science'
         },
-        description: 'Instructor information'
+        description: 'Instructor information',
+        additionalProperties: true
     })
     instructor?: any;
 }

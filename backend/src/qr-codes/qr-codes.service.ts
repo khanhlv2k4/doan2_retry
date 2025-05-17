@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { QrCode } from './entities/qr-code.entity';
-import { CreateQrCodeDto, UpdateQrCodeDto } from './dto/qr-code.dto';
+import { CreateQRCodeDto, UpdateQRCodeDto } from './dto/qr-code.dto';
 import * as QRCode from 'qrcode';
 import * as CryptoJS from 'crypto-js';
 import { ConfigService } from '@nestjs/config';
@@ -21,14 +21,14 @@ export class QrCodesService {
 
     async findAll(): Promise<QrCode[]> {
         return this.qrCodesRepository.find({
-            relations: ['schedule', 'createdBy'],
+            relations: ['schedule', 'created_by_user'],
         });
     }
 
     async findOne(id: number): Promise<QrCode> {
         const qrCode = await this.qrCodesRepository.findOne({
             where: { qr_id: id },
-            relations: ['schedule', 'createdBy'],
+            relations: ['schedule', 'created_by_user'],
         });
 
         if (!qrCode) {
@@ -38,12 +38,13 @@ export class QrCodesService {
         return qrCode;
     }
 
-    async create(createQrCodeDto: CreateQrCodeDto): Promise<QrCode> {
+    async create(createQrCodeDto: CreateQRCodeDto): Promise<QrCode> {
         // Generate a unique token for the QR code
         const qrData = {
-            scheduleId: createQrCodeDto.scheduleId,
+            schedule_id: createQrCodeDto.schedule_id,
+            course_id: createQrCodeDto.course_id,
             timestamp: new Date().getTime(),
-            expiresAt: new Date(createQrCodeDto.expiresAt).getTime(),
+            expires_at: new Date(createQrCodeDto.expires_at || new Date(Date.now() + 10 * 60000)).getTime(),
         };
 
         // Encrypt the data
@@ -57,33 +58,36 @@ export class QrCodesService {
 
         // Create QR code record
         const qrCode = this.qrCodesRepository.create({
-            scheduleId: createQrCodeDto.scheduleId,
-            createdById: createQrCodeDto.createdById,
-            qrContent: encryptedData,
-            qrImage: qrImageData,
-            isActive: true,
-            expiresAt: new Date(createQrCodeDto.expiresAt),
+            schedule_id: createQrCodeDto.schedule_id,
+            course_id: createQrCodeDto.course_id,
+            created_by: createQrCodeDto.created_by,
+            qr_code: encryptedData,
+            qr_image_url: qrImageData,
+            is_active: true,
+            expires_at: new Date(createQrCodeDto.expires_at || new Date(Date.now() + 10 * 60000)),
+            session_date: new Date(createQrCodeDto.session_date),
         });
 
         return this.qrCodesRepository.save(qrCode);
     }
 
-    async update(id: number, updateQrCodeDto: UpdateQrCodeDto): Promise<QrCode> {
+    async update(id: number, updateQrCodeDto: UpdateQRCodeDto): Promise<QrCode> {
         const qrCode = await this.findOne(id);
 
         // Update QR code properties
-        if (updateQrCodeDto.isActive !== undefined) {
-            qrCode.isActive = updateQrCodeDto.isActive;
+        if (updateQrCodeDto.is_active !== undefined) {
+            qrCode.is_active = updateQrCodeDto.is_active;
         }
 
-        if (updateQrCodeDto.expiresAt) {
-            qrCode.expiresAt = new Date(updateQrCodeDto.expiresAt);
+        if (updateQrCodeDto.expires_at) {
+            qrCode.expires_at = new Date(updateQrCodeDto.expires_at);
 
             // If expiration is updated, regenerate the QR code
             const qrData = {
-                scheduleId: qrCode.scheduleId,
+                schedule_id: qrCode.schedule_id,
+                course_id: qrCode.course_id,
                 timestamp: new Date().getTime(),
-                expiresAt: new Date(updateQrCodeDto.expiresAt).getTime(),
+                expires_at: new Date(updateQrCodeDto.expires_at).getTime(),
             };
 
             // Encrypt the data
@@ -95,8 +99,8 @@ export class QrCodesService {
             // Generate new QR code
             const qrImageData = await QRCode.toDataURL(encryptedData);
 
-            qrCode.qrContent = encryptedData;
-            qrCode.qrImage = qrImageData;
+            qrCode.qr_code = encryptedData;
+            qrCode.qr_image_url = qrImageData;
         }
 
         return this.qrCodesRepository.save(qrCode);
@@ -107,23 +111,23 @@ export class QrCodesService {
         await this.qrCodesRepository.remove(qrCode);
     }
 
-    async validateQrCode(qrContent: string): Promise<{ isValid: boolean; scheduleId?: number }> {
+    async validateQrCode(qr_code: string): Promise<{ isValid: boolean; course_id?: number; schedule_id?: number; qr_id?: number }> {
         try {
             // Decrypt the QR code content
-            const bytes = CryptoJS.AES.decrypt(qrContent, this.secretKey);
+            const bytes = CryptoJS.AES.decrypt(qr_code, this.secretKey);
             const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 
             // Check if the QR code is expired
             const now = new Date().getTime();
-            if (now > decryptedData.expiresAt) {
+            if (now > decryptedData.expires_at) {
                 return { isValid: false };
             }
 
             // Find the QR code in the database
             const qrCode = await this.qrCodesRepository.findOne({
                 where: {
-                    qrContent,
-                    isActive: true,
+                    qr_code: qr_code,
+                    is_active: true,
                 },
             });
 
@@ -133,7 +137,9 @@ export class QrCodesService {
 
             return {
                 isValid: true,
-                scheduleId: decryptedData.scheduleId
+                course_id: qrCode.course_id,
+                schedule_id: decryptedData.schedule_id,
+                qr_id: qrCode.qr_id
             };
         } catch (error) {
             console.error('Error validating QR code:', error);

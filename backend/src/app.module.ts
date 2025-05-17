@@ -15,10 +15,6 @@ import { StudentCoursesModule } from './student-courses/student-courses.module';
 import { QrCodesModule } from './qr-codes/qr-codes.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { NotificationsModule } from './notifications/notifications.module';
-import { LogsModule } from './logs/logs.module';
-import { UserSessionsModule } from './user-sessions/user-sessions.module';
-import { PasswordResetModule } from './password-reset/password-reset.module';
-import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -40,10 +36,6 @@ import { AuthModule } from './auth/auth.module';
     QrCodesModule,
     AttendanceModule,
     NotificationsModule,
-    LogsModule,
-    UserSessionsModule,
-    PasswordResetModule,
-    AdminDashboardModule,
     AuthModule,
   ],
   controllers: [AppController],

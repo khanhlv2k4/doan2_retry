@@ -60,13 +60,40 @@ export class InstructorResponseDto {
     @ApiProperty({ example: '2025-01-01T00:00:00.000Z', description: 'Record update timestamp' })
     updated_at: Date;
 
-    // Include user information
-    @ApiProperty({ example: 'instructor@example.com', description: 'User email address' })
-    email: string;
+    @ApiPropertyOptional({
+        description: 'User information',
+        type: 'object',
+        properties: {
+            user_id: { type: 'number', example: 1 },
+            name: { type: 'string', example: 'Jane Doe' },
+            email: { type: 'string', example: 'instructor@example.com' },
+            phone: { type: 'string', example: '1234567890' },
+            role: { type: 'string', example: 'INSTRUCTOR' }
+        }
+    })
+    user?: {
+        user_id: number;
+        name: string;
+        email: string;
+        phone: string;
+        role: string;
+    };
 
-    @ApiProperty({ example: 'Jane Doe', description: 'User full name' })
-    name: string;
-
-    @ApiPropertyOptional({ example: '/uploads/avatars/instructor.jpg', description: 'User profile image path' })
-    user_image?: string;
+    @ApiPropertyOptional({
+        description: 'Associated courses',
+        type: 'array',
+        items: {
+            type: 'object',
+            properties: {
+                course_id: { type: 'number', example: 1 },
+                course_code: { type: 'string', example: 'CS101' },
+                course_name: { type: 'string', example: 'Introduction to Computer Science' }
+            }
+        }
+    })
+    courses?: {
+        course_id: number;
+        course_code: string;
+        course_name: string;
+    }[];
 }

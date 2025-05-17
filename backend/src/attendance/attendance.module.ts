@@ -8,14 +8,14 @@ import { ScheduleModule } from '../schedule/schedule.module';
 import { StudentsModule } from '../students/students.module';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Attendance]),
-        QrCodesModule,
-        ScheduleModule,
-        StudentsModule
-    ],
-    controllers: [AttendanceController],
-    providers: [AttendanceService],
-    exports: [AttendanceService],
+  imports: [
+    TypeOrmModule.forFeature([Attendance]),
+    QrCodesModule,
+    ScheduleModule,
+    StudentsModule,
+  ],
+  controllers: [AttendanceController],
+  providers: [AttendanceService],
+  exports: [AttendanceService],
 })
-export class AttendanceModule { }
+export class AttendanceModule {}
