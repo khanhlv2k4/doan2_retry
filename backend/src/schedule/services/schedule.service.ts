@@ -37,23 +37,23 @@ export class ScheduleService {
     }
 
     async findByStudent(studentId: number): Promise<Schedule[]> {
-        // Truy vấn lịch học của sinh viên dựa trên các khóa học mà sinh viên đã đăng ký
-        const schedules = await this.scheduleRepository
-            .createQueryBuilder('schedule')
-            .innerJoin('student_courses', 'sc', 'sc.course_id = schedule.course_id')
-            .innerJoinAndSelect('schedule.course', 'course')
-            .innerJoinAndSelect('course.instructor', 'instructor')
-            .innerJoinAndSelect('instructor.user', 'instructorUser')
-            .leftJoinAndSelect('schedule.room', 'room')
-            .where('sc.student_id = :studentId', { studentId })
-            .getMany();
+        try {
+            // Truy vấn lịch học của sinh viên dựa trên các khóa học mà sinh viên đã đăng ký
+            const schedules = await this.scheduleRepository
+                .createQueryBuilder('schedule')
+                .innerJoin('student_courses', 'sc', 'sc.course_id = schedule.course_id')
+                .innerJoinAndSelect('schedule.course', 'course')
+                .leftJoinAndSelect('course.instructor', 'instructor')
+                .leftJoinAndSelect('instructor.user', 'instructorUser')
+                .leftJoinAndSelect('schedule.room', 'room')
+                .where('sc.student_id = :studentId', { studentId })
+                .getMany();
 
-        if (!schedules || schedules.length === 0) {
-            // Trả về mảng rỗng nếu không tìm thấy lịch học
+            return schedules;
+        } catch (error) {
+            console.error('Error finding schedules for student:', error);
             return [];
         }
-
-        return schedules;
     }
 
     async create(createScheduleDto: CreateScheduleDto): Promise<Schedule> {

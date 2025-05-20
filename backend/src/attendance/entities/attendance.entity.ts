@@ -41,6 +41,7 @@ export class Attendance {
     @Column({
         type: 'enum',
         enum: AttendanceStatus,
+        enumName: 'attendance_status', // Use PostgreSQL enum name
         default: AttendanceStatus.PRESENT,
     })
     status: AttendanceStatus;

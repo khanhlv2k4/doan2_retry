@@ -15,7 +15,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 password: configService.get('DB_PASSWORD', '123456'),
                 database: configService.get('DB_NAME', 'attendance_qr'),
                 entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-                synchronize: configService.get('DB_SYNC', false),
+                synchronize: false, // Change to false to prevent auto-schema creation
                 logging: configService.get('DB_LOGGING', false),
             }),
         }),

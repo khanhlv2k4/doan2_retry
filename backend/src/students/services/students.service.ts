@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Student } from './entities/student.entity';
-import { User, UserRole } from '../users/entities/user.entity';
-import { CreateStudentDto, UpdateStudentDto } from './dto/student.dto';
-import { UsersService } from '../users/services/users.service';
+import { Student } from '../entities/student.entity';
+import { User, UserRole } from '../../users/entities/user.entity';
+import { CreateStudentDto, UpdateStudentDto } from '../dto/student.dto';
+import { UsersService } from '../../users/services/users.service';
 
 @Injectable()
 export class StudentsService {
@@ -54,7 +54,7 @@ export class StudentsService {
             user_id: createStudentDto.user_id,
             student_code: createStudentDto.student_code,
             class_id: createStudentDto.class_id,
-            // Đã xóa trường department vì không còn tồn tại trong entity
+            // Đã xóa trường department
             year_of_admission: createStudentDto.year_of_admission,
         });
 
@@ -68,7 +68,7 @@ export class StudentsService {
         if (updateStudentDto.class_id !== undefined)
             student.class_id = updateStudentDto.class_id;
 
-        // Đã xóa khối xử lý department vì không còn tồn tại trong entity
+        // Đã xóa phần xử lý department
 
         if (updateStudentDto.year_of_admission !== undefined)
             student.year_of_admission = updateStudentDto.year_of_admission;

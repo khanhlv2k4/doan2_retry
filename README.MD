@@ -17,9 +17,6 @@ CREATE TYPE notification_type AS ENUM ('system', 'attendance', 'course', 'user')
 CREATE TYPE notification_status AS ENUM ('unread', 'read');
 
 -- 2. DROP TABLES
-DROP TABLE IF EXISTS admin_dashboard CASCADE;
-DROP TABLE IF EXISTS user_sessions CASCADE;
-DROP TABLE IF EXISTS logs CASCADE;
 DROP TABLE IF EXISTS notifications CASCADE;
 DROP TABLE IF EXISTS attendance CASCADE;
 DROP TABLE IF EXISTS qr_codes CASCADE;

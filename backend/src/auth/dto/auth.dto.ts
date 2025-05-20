@@ -1,82 +1,71 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength, IsNotEmpty, Length, Matches, IsPhoneNumber, IsOptional, IsBoolean } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, MaxLength, IsOptional, IsEnum, IsBoolean, IsISO8601 } from 'class-validator';
 import { UserRole } from '../../users/entities/user.entity';
 
 export class LoginDto {
-    @ApiProperty({ example: 'user@example.com', description: 'User email address' })
-    @IsEmail()
+    @ApiProperty({ example: 'user@example.com', description: 'Email address' })
+    @IsEmail({}, { message: 'Please provide a valid email address' })
+    @IsNotEmpty({ message: 'Email is required' })
     email: string;
 
     @ApiProperty({ example: 'password123', description: 'User password' })
-    @IsString()
-    @MinLength(6)
+    @IsString({ message: 'Password must be a string' })
+    @IsNotEmpty({ message: 'Password is required' })
+    @MinLength(6, { message: 'Password must be at least 6 characters long' })
     password: string;
 }
 
 export class RegisterDto {
-    @ApiProperty({ example: 'John Doe', description: 'Full name of the user' })
+    @ApiProperty({ example: 'John Doe', description: 'Full name' })
     @IsString()
     @IsNotEmpty()
     name: string;
 
-    @ApiProperty({ example: 'john.doe@example.com', description: 'Email address' })
+    @ApiProperty({ example: 'user@example.com', description: 'Email address' })
     @IsEmail()
     @IsNotEmpty()
     email: string;
 
-    @ApiProperty({
-        example: 'Password123!',
-        description: 'Password (min 8 chars, with uppercase, lowercase, number and symbol)'
-    })
+    @ApiProperty({ example: 'password123', description: 'User password' })
     @IsString()
-    @Length(8, 50)
-    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-        message: 'Password must include uppercase, lowercase, number/special character',
-    })
+    @IsNotEmpty()
+    @MinLength(6)
     password: string;
 
-    @ApiPropertyOptional({
-        example: '+84123456789',
-        description: 'Phone number (use international format with country code or leave empty)'
-    })
+    @ApiPropertyOptional({ enum: UserRole, default: UserRole.STUDENT, description: 'User role' })
+    @IsEnum(UserRole)
     @IsOptional()
-    @Matches(/^(\+\d{1,3}[- ]?)?\d{9,15}$/, {
-        message: 'Phone must be a valid phone number. Use international format with country code (e.g., +84123456789) or local format (e.g., 0123456789)'
-    })
-    phone?: string;
-
-    @ApiPropertyOptional({
-        example: UserRole.STUDENT,
-        enum: UserRole,
-        description: 'User role (defaults to STUDENT)'
-    })
-    @IsOptional()
-    @IsString()
     role?: UserRole;
 
-    @ApiPropertyOptional({ example: 'http://example.com/image.jpg', description: 'User profile image URL' })
-    @IsOptional()
+    @ApiPropertyOptional({ example: '0987654321', description: 'Phone number' })
     @IsString()
-    user_image?: string;
+    @IsOptional()
+    phone?: string;
 
-    @ApiPropertyOptional({ example: '123 Main St, City', description: 'User address' })
-    @IsOptional()
+    @ApiPropertyOptional({ example: '123 Main St', description: 'Address' })
     @IsString()
+    @IsOptional()
     address?: string;
 
-    @ApiPropertyOptional({ example: '1990-01-01', description: 'Date of birth (YYYY-MM-DD)' })
+    @ApiPropertyOptional({ example: '1990-01-01', description: 'Date of birth' })
     @IsOptional()
+    @IsISO8601()
     @IsString()
     date_of_birth?: string;
 
-    @ApiPropertyOptional({ example: true, description: 'Is user active' })
+    @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg', description: 'User image URL' })
+    @IsString()
     @IsOptional()
+    user_image?: string;
+
+    @ApiPropertyOptional({ example: true, description: 'Is account active' })
     @IsBoolean()
+    @IsOptional()
     is_active?: boolean;
 
     @ApiPropertyOptional({ example: false, description: 'Is email verified' })
-    @IsOptional()
     @IsBoolean()
+    @IsOptional()
     email_verified?: boolean;
 }
 
@@ -111,10 +100,6 @@ export class SignupStudentDto {
     @IsString()
     student_code: string;
 
-    @ApiPropertyOptional({ example: 'Computer Science', description: 'Department name' })
-    @IsString()
-    department?: string;
-
     @ApiPropertyOptional({ example: '2022', description: 'Year of admission' })
     @IsString()
     year_of_admission?: string;
@@ -122,4 +107,10 @@ export class SignupStudentDto {
     @ApiPropertyOptional({ example: '0987654321', description: 'User phone number' })
     @IsString()
     phone?: string;
+}
+
+export class JwtPayloadDto {
+    sub: number;
+    email: string;
+    role: string;
 }

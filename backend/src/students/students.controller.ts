@@ -95,7 +95,7 @@ export class StudentsController {
             user_id: student.user_id,
             student_code: student.student_code,
             class_id: student.class_id,
-            department: student.department,
+            // Đã xóa thuộc tính department vì không còn tồn tại trong entity
             year_of_admission: student.year_of_admission,
             created_at: student.created_at,
             updated_at: student.updated_at

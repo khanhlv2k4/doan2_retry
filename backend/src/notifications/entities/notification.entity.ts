@@ -30,6 +30,7 @@ export class Notification {
     @Column({
         type: 'enum',
         enum: NotificationType,
+        enumName: 'notification_type', // Use PostgreSQL enum name
         default: NotificationType.SYSTEM,
         nullable: false
     })
@@ -38,6 +39,7 @@ export class Notification {
     @Column({
         type: 'enum',
         enum: NotificationStatus,
+        enumName: 'notification_status', // Use PostgreSQL enum name
         default: NotificationStatus.UNREAD,
         nullable: false
     })
@@ -47,7 +49,9 @@ export class Notification {
     related_id: number;
 
     @Column({ name: 'related_type', length: 50, nullable: true })
-    related_type: string; @Column({ name: 'is_read', default: false })
+    related_type: string;
+
+    @Column({ name: 'is_read', default: false })
     is_read: boolean;
 
     @Column({ name: 'read_at', type: 'timestamp', nullable: true })

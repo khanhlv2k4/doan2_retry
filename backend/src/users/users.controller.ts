@@ -9,13 +9,17 @@ import {
     Post,
     Query,
     UseGuards,
+    HttpStatus,
+    HttpCode,
+    InternalServerErrorException,
 } from '@nestjs/common';
 import {
     ApiOperation,
     ApiQuery,
     ApiResponse,
     ApiTags,
-} from '@nestjs/swagger'; // Removed ApiBearerAuth as it was unused
+    ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto/user.dto';
 import { User, UserRole } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -24,6 +28,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { UsersService } from './services/users.service';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
@@ -44,8 +49,12 @@ export class UsersController {
     @Roles(UserRole.ADMIN)
     @Get()
     async findAll(@Query('role') role?: UserRole): Promise<UserResponseDto[]> {
-        const users = await this.usersService.findAll(role);
-        return users.map((user) => this.mapToResponseDto(user));
+        try {
+            const users = await this.usersService.findAll(role);
+            return users.map((user) => this.mapToResponseDto(user));
+        } catch (error) {
+            throw new InternalServerErrorException('Error fetching users');
+        }
     }
 
     @ApiOperation({ summary: 'Get a specific user by ID' })
@@ -73,11 +82,16 @@ export class UsersController {
     })
     @ApiResponse({
         status: 400,
-        description: 'Bad request (e.g., email already exists)',
+        description: 'Bad request (e.g., invalid data)',
+    })
+    @ApiResponse({
+        status: 409,
+        description: 'Conflict (e.g., email already exists)',
     })
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
         const user = await this.usersService.create(createUserDto);
         return this.mapToResponseDto(user);
@@ -90,6 +104,7 @@ export class UsersController {
         type: UserResponseDto,
     })
     @ApiResponse({ status: 404, description: 'User not found' })
+    @ApiResponse({ status: 409, description: 'Conflict (e.g., email already exists)' })
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     @Patch(':id')
@@ -110,27 +125,19 @@ export class UsersController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     @Delete(':id')
+    @HttpCode(HttpStatus.NO_CONTENT)
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.usersService.remove(id);
-    } private mapToResponseDto(user: User): UserResponseDto {
+    }
+
+    private mapToResponseDto(user: User): UserResponseDto {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password_hash, ...userWithoutSensitiveInfo } =
-            user;
+        const { password_hash, ...userWithoutSensitiveInfo } = user;
         return {
-            user_id: userWithoutSensitiveInfo.user_id,
-            email: userWithoutSensitiveInfo.email,
-            name: userWithoutSensitiveInfo.name,
-            role: userWithoutSensitiveInfo.role,
-            user_image: userWithoutSensitiveInfo.user_image,
-            phone: userWithoutSensitiveInfo.phone,
-            address: userWithoutSensitiveInfo.address, date_of_birth: userWithoutSensitiveInfo.date_of_birth
-                ?.toISOString()
-                .split('T')[0], // Format as YYYY-MM-DD            
-            is_active: userWithoutSensitiveInfo.is_active,
-            email_verified: userWithoutSensitiveInfo.email_verified,
-            last_login: userWithoutSensitiveInfo.last_login,
-            created_at: userWithoutSensitiveInfo.created_at,
-            updated_at: userWithoutSensitiveInfo.updated_at,
+            ...userWithoutSensitiveInfo,
+            date_of_birth: userWithoutSensitiveInfo.date_of_birth
+                ? userWithoutSensitiveInfo.date_of_birth.toISOString().split('T')[0]
+                : null, // Format as YYYY-MM-DD or null
         } as UserResponseDto;
     }
 }

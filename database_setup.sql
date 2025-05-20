@@ -81,7 +81,6 @@ CREATE TABLE users (
 CREATE TABLE instructors (
     instructor_id SERIAL PRIMARY KEY,                -- Khóa chính
     user_id INT REFERENCES users(user_id) ON DELETE CASCADE, -- Liên kết đến bảng users
-    department VARCHAR(100) NOT NULL,                -- Khoa giảng dạy
     position VARCHAR(100),                           -- Chức vụ (Trưởng khoa, Giảng viên chính,...)
     specialization TEXT,                             -- Chuyên ngành chuyên sâu
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Ngày tạo bản ghi

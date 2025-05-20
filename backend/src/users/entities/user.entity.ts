@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne } from 'typeorm';
 
+// Keep the enum for TypeScript type checking
 export enum UserRole {
     ADMIN = 'admin',
     INSTRUCTOR = 'instructor',
@@ -20,7 +21,13 @@ export class User {
     @Column({ name: 'password_hash', nullable: false })
     password_hash: string;
 
-    @Column({ type: 'enum', enum: UserRole, nullable: false })
+    // Use the SQL-defined enum by specifying the type as a string
+    @Column({
+        type: 'enum',
+        enum: UserRole,
+        enumName: 'user_role', // Use the actual PostgreSQL enum name
+        nullable: false
+    })
     role: UserRole;
 
     @Column({ name: 'user_image', type: 'varchar', length: 255, nullable: true })
@@ -53,7 +60,7 @@ export class User {
     @UpdateDateColumn({ name: 'updated_at' })
     updated_at: Date;
 
-    // Giữ lại các quan hệ còn hoạt động và loại bỏ các quan hệ không tồn tại
+    // Relationships
     @OneToOne('Student', 'user')
     student: any;
 
@@ -62,18 +69,6 @@ export class User {
 
     @OneToMany('Notification', 'user')
     notifications: any[];
-
-    // Loại bỏ các quan hệ tới bảng đã xóa
-    /*
-    @OneToMany('Log', 'user')
-    logs: any[];
-
-    @OneToMany('UserSession', 'user')
-    sessions: any[];
-
-    @OneToMany('PasswordReset', 'user')
-    password_resets: any[];
-    */
 
     @OneToMany('QrCode', 'created_by_user')
     qr_codes: any[];

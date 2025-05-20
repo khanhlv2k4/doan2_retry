@@ -1,15 +1,15 @@
-import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../../auth/decorators/public.decorator';
 import { ScheduleService } from '../../schedule/services/schedule.service';
-import { StudentsService } from '../services/students.service';
+import { StudentService } from '../services/student.service';
 
 @ApiTags('student')
 @Controller('student')
-public class StudentScheduleController {
+export class StudentScheduleController {
     constructor(
         private readonly scheduleService: ScheduleService,
-        private readonly studentsService: StudentsService
+        private readonly studentService: StudentService
     ) { }
 
     @Public()

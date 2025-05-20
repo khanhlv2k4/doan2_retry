@@ -1,160 +1,139 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-    IsEmail, IsString, IsNotEmpty, IsEnum, IsOptional,
-    MinLength, IsBoolean, Length, Matches
-} from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 import { UserRole } from '../entities/user.entity';
 
 export class CreateUserDto {
-    @ApiProperty({ example: 'John Doe', description: 'User full name' })
-    @IsString()
+    @ApiProperty()
     @IsNotEmpty()
+    @IsString()
     name: string;
 
-    @ApiProperty({ example: 'user@example.com', description: 'User email' })
-    @IsEmail()
+    @ApiProperty()
     @IsNotEmpty()
+    @IsEmail()
     email: string;
 
-    @ApiProperty({
-        example: 'Password123!',
-        description: 'User password'
-    })
-    @IsString()
-    @Length(8, 50)
-    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-        message: 'Password must include uppercase, lowercase, number/special character',
-    })
+    @ApiProperty()
+    @IsNotEmpty()
+    @MinLength(6)
     password: string;
 
-    @ApiProperty({
-        example: 'student',
-        enum: UserRole,
-        description: 'User role'
-    })
+    @ApiProperty({ enum: UserRole })
+    @IsNotEmpty()
     @IsEnum(UserRole)
     role: UserRole;
 
-    @ApiPropertyOptional({ example: '+1234567890', description: 'User phone number' })
-    @IsOptional()
-    @IsString()
-    phone?: string;
-
-    @ApiPropertyOptional({ example: '123 Main St', description: 'User address' })
-    @IsOptional()
-    @IsString()
-    address?: string;
-
-    @ApiPropertyOptional({ example: '1990-01-01', description: 'Date of birth' })
-    @IsOptional()
-    @IsString()
-    date_of_birth?: string;
-
-    @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg', description: 'User profile image' })
+    @ApiPropertyOptional()
     @IsOptional()
     @IsString()
     user_image?: string;
 
-    @ApiPropertyOptional({ example: true, description: 'Is user account active' })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsBoolean()
+    @IsString()
+    phone?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    address?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    date_of_birth?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
     is_active?: boolean;
 
-    @ApiPropertyOptional({ example: false, description: 'Is email verified' })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsBoolean()
     email_verified?: boolean;
 }
 
 export class UpdateUserDto {
-    @ApiPropertyOptional({ example: 'John Doe', description: 'User full name' })
+    @ApiPropertyOptional()
     @IsOptional()
     @IsString()
     name?: string;
 
-    @ApiPropertyOptional({
-        example: 'Password123!',
-        description: 'User password'
-    })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsString()
-    @MinLength(8)
+    @IsEmail()
+    email?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @MinLength(6)
     password?: string;
 
-    @ApiPropertyOptional({
-        example: 'student',
-        enum: UserRole,
-        description: 'User role'
-    })
+    @ApiPropertyOptional({ enum: UserRole })
     @IsOptional()
     @IsEnum(UserRole)
     role?: UserRole;
 
-    @ApiPropertyOptional({ example: '+1234567890', description: 'User phone number' })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsString()
-    phone?: string;
-
-    @ApiPropertyOptional({ example: '123 Main St', description: 'User address' })
-    @IsOptional()
-    @IsString()
-    address?: string;
-
-    @ApiPropertyOptional({ example: '1990-01-01', description: 'Date of birth' })
-    @IsOptional()
-    @IsString()
-    date_of_birth?: string;
-
-    @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg', description: 'User profile image' })
-    @IsOptional()
-    @IsString()
     user_image?: string;
 
-    @ApiPropertyOptional({ example: true, description: 'Is user account active' })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsBoolean()
+    phone?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    address?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    date_of_birth?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
     is_active?: boolean;
 
-    @ApiPropertyOptional({ example: false, description: 'Is email verified' })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsBoolean()
     email_verified?: boolean;
 }
 
 export class UserResponseDto {
-    @ApiProperty({ example: 1 })
+    @ApiProperty()
     user_id: number;
 
-    @ApiProperty({ example: 'John Doe' })
+    @ApiProperty()
     name: string;
 
-    @ApiProperty({ example: 'user@example.com' })
+    @ApiProperty()
     email: string;
 
-    @ApiProperty({ example: 'student', enum: UserRole })
+    @ApiProperty({ enum: UserRole })
     role: UserRole;
 
-    @ApiPropertyOptional({ example: '+1234567890' })
-    phone?: string | null;
+    @ApiPropertyOptional()
+    user_image?: string;
 
-    @ApiPropertyOptional({ example: '123 Main St' })
-    address?: string | null;
+    @ApiPropertyOptional()
+    phone?: string;
 
-    @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg' })
-    user_image?: string | null;
+    @ApiPropertyOptional()
+    address?: string;
 
-    @ApiProperty({ example: true })
-    is_active: boolean;
+    @ApiPropertyOptional()
+    date_of_birth?: string;
 
-    @ApiProperty({ example: false })
-    email_verified: boolean;
+    @ApiPropertyOptional()
+    is_active?: boolean;
 
-    @ApiPropertyOptional({ example: '2023-01-01T00:00:00.000Z' })
-    last_login?: Date | null;
+    @ApiPropertyOptional()
+    email_verified?: boolean;
 
-    @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
+    @ApiPropertyOptional()
+    last_login?: Date;
+
+    @ApiProperty()
     created_at: Date;
 
-    @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
+    @ApiProperty()
     updated_at: Date;
 }

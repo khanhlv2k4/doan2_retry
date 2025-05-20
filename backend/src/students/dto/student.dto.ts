@@ -1,95 +1,75 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional, PartialType, OmitType } from '@nestjs/swagger';
+import { IsEmail, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Length, Min } from 'class-validator';
+import { UserRole } from '../../users/entities/user.entity';
 
 export class CreateStudentDto {
-    @ApiProperty({ example: 1, description: 'User ID of the student' })
+    @ApiProperty({ description: 'User ID of the student', example: 1 })
     @IsNumber()
+    @IsPositive()
     user_id: number;
 
-    @ApiProperty({ example: 'SV12345', description: 'Student code/ID' })
+    @ApiProperty({ description: 'Student code (unique)', example: 'SV12345' })
     @IsString()
+    @IsNotEmpty()
+    @Length(5, 50)
     student_code: string;
 
-    @ApiPropertyOptional({ example: 1, description: 'Class ID that student belongs to' })
+    @ApiPropertyOptional({ description: 'Class ID the student belongs to', example: 1 })
     @IsOptional()
     @IsNumber()
+    @IsPositive()
     class_id?: number;
 
-    @ApiProperty({ example: 'Computer Science', description: 'Department name' })
-    @IsString()
-    department: string;
+    // Đã xóa trường department
 
-    @ApiPropertyOptional({ example: 2022, description: 'Year of admission' })
+    @ApiPropertyOptional({ description: 'Year the student was admitted', example: 2023 })
     @IsOptional()
     @IsInt()
     @Min(2000)
     year_of_admission?: number;
 }
 
-export class UpdateStudentDto {
-    @ApiPropertyOptional({ example: 1, description: 'Class ID that student belongs to' })
-    @IsOptional()
-    @IsNumber()
-    class_id?: number;
-
-    @ApiPropertyOptional({ example: 'Computer Science', description: 'Department name' })
-    @IsOptional()
-    @IsString()
-    department?: string;
-
-    @ApiPropertyOptional({ example: 2022, description: 'Year of admission' })
-    @IsOptional()
-    @IsInt()
-    @Min(2000)
-    year_of_admission?: number;
-}
+export class UpdateStudentDto extends PartialType(
+    OmitType(CreateStudentDto, ['user_id', 'student_code'] as const),
+) { }
 
 export class StudentResponseDto {
-    @ApiProperty({ example: 1, description: 'Student ID' })
+    @ApiProperty({ example: 1 })
     student_id: number;
 
-    @ApiProperty({ example: 1, description: 'User ID of the student' })
+    @ApiProperty({ example: 1 })
     user_id: number;
 
-    @ApiProperty({ example: 'SV12345', description: 'Student code/ID' })
+    @ApiProperty({ example: 'SV12345' })
     student_code: string;
 
-    @ApiPropertyOptional({ example: 1, description: 'Class ID that student belongs to' })
+    @ApiPropertyOptional({ example: 1 })
     class_id?: number;
 
-    @ApiProperty({ example: 'Computer Science', description: 'Department name' })
-    department: string;
+    // Đã xóa trường department
 
-    @ApiPropertyOptional({ example: 2022, description: 'Year of admission' })
+    @ApiPropertyOptional({ example: 2023 })
     year_of_admission?: number;
 
-    @ApiProperty({ example: '2023-01-01T00:00:00.000Z', description: 'Creation timestamp' })
+    @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
     created_at: Date;
 
-    @ApiProperty({ example: '2023-01-01T00:00:00.000Z', description: 'Last update timestamp' })
+    @ApiProperty({ example: '2023-01-01T00:00:00.000Z' })
     updated_at: Date;
 
-    @ApiPropertyOptional({
-        example: { user_id: 1, name: 'John Doe', email: 'john@example.com' },
-        description: 'User information'
-    })
+    @ApiPropertyOptional()
     user?: {
         user_id: number;
         name: string;
         email: string;
+        role: string;
         phone?: string;
-        role?: string;
     };
 
-    @ApiPropertyOptional({
-        example: [
-            { course_id: 1, course_name: 'Introduction to Programming' }
-        ],
-        description: 'Enrolled courses'
-    })
-    courses?: {
+    @ApiPropertyOptional()
+    courses?: Array<{
         course_id: number;
+        course_code: string;
         course_name: string;
-        course_code?: string;
-    }[];
+    }>;
 }
