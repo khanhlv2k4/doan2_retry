@@ -16,57 +16,64 @@ export class LoginDto {
 }
 
 export class RegisterDto {
-    @ApiProperty({ example: 'John Doe', description: 'Full name' })
-    @IsString()
+    @ApiProperty()
     @IsNotEmpty()
+    @IsString()
     name: string;
 
-    @ApiProperty({ example: 'user@example.com', description: 'Email address' })
-    @IsEmail()
+    @ApiProperty()
     @IsNotEmpty()
+    @IsEmail()
     email: string;
 
-    @ApiProperty({ example: 'password123', description: 'User password' })
-    @IsString()
+    @ApiProperty()
     @IsNotEmpty()
     @MinLength(6)
     password: string;
 
-    @ApiPropertyOptional({ enum: UserRole, default: UserRole.STUDENT, description: 'User role' })
+    @ApiProperty({ enum: UserRole })
+    @IsNotEmpty()
     @IsEnum(UserRole)
-    @IsOptional()
-    role?: UserRole;
+    role: UserRole;
 
-    @ApiPropertyOptional({ example: '0987654321', description: 'Phone number' })
-    @IsString()
+    @ApiPropertyOptional()
     @IsOptional()
+    @IsString()
     phone?: string;
 
-    @ApiPropertyOptional({ example: '123 Main St', description: 'Address' })
-    @IsString()
+    @ApiPropertyOptional()
     @IsOptional()
+    @IsString()
     address?: string;
 
-    @ApiPropertyOptional({ example: '1990-01-01', description: 'Date of birth' })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsISO8601()
-    @IsString()
     date_of_birth?: string;
 
-    @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg', description: 'User image URL' })
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsString()
-    @IsOptional()
-    user_image?: string;
+    department?: string;
 
-    @ApiPropertyOptional({ example: true, description: 'Is account active' })
-    @IsBoolean()
+    // Các trường bổ sung cho sinh viên hoặc giảng viên
+    @ApiPropertyOptional()
     @IsOptional()
-    is_active?: boolean;
+    @IsString()
+    studentCode?: string;
 
-    @ApiPropertyOptional({ example: false, description: 'Is email verified' })
-    @IsBoolean()
+    @ApiPropertyOptional()
     @IsOptional()
-    email_verified?: boolean;
+    yearOfAdmission?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    specialization?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    position?: string;
 }
 
 export class AuthResponseDto {

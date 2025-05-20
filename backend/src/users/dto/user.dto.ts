@@ -49,6 +49,11 @@ export class CreateUserDto {
     @ApiPropertyOptional()
     @IsOptional()
     email_verified?: boolean;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    department?: string;
 }
 
 export class UpdateUserDto {
@@ -95,6 +100,10 @@ export class UpdateUserDto {
     @ApiPropertyOptional()
     @IsOptional()
     email_verified?: boolean;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    department?: string;
 }
 
 export class UserResponseDto {
@@ -127,6 +136,9 @@ export class UserResponseDto {
 
     @ApiPropertyOptional()
     email_verified?: boolean;
+
+    @ApiPropertyOptional()
+    department?: string;
 
     @ApiPropertyOptional()
     last_login?: Date;

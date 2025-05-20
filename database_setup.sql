@@ -72,6 +72,7 @@ CREATE TABLE users (
     phone VARCHAR(20),                               -- Số điện thoại
     address TEXT,                                    -- Địa chỉ người dùng
     date_of_birth DATE,                              -- Ngày sinh
+    department VARCHAR(100),                         -- Khoa/Phòng ban (thêm mới)
     last_login TIMESTAMP,                            -- Thời điểm đăng nhập gần nhất
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Ngày tạo tài khoản
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP   -- Ngày cập nhật cuối

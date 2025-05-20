@@ -54,6 +54,9 @@ export class User {
     @Column({ name: 'verification_token', nullable: true })
     verification_token: string;
 
+    @Column({ type: 'varchar', length: 100, nullable: true })
+    department: string | null;
+
     @CreateDateColumn({ name: 'created_at' })
     created_at: Date;
 
